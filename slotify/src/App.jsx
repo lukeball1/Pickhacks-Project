@@ -122,8 +122,11 @@ function App() {
     }
   })
 
+  
+
   //making fuction to handle getting the playlist link
   const [playlistLink, setPlaylistLink] = useState([]);
+  const [playlistSubmitted, setPlaylistSubmitted] = useState(false);
 
   const handlePlaylistChange = (event) => {
     setPlaylistLink(event.target.value);
@@ -133,6 +136,8 @@ function App() {
   const handlePlaylistSumbit = () =>{
     console.log("Playlist Submitted:", playlistLink);
     //add logic to process the playlist
+    //if the playlist is valid and loads properly:
+    setPlaylistSubmitted(true); //hides input & button
   };
 
   const [guess, setGuess] = useState("");
@@ -141,10 +146,17 @@ function App() {
     setGuess(event.target.value);
   };
 
+  //make a state variable to track whether the dropdown menu is visible
+  const [showDropdown, setShowDropdoown] = useState(false);
+
   //Function to handle guess submission
   const handleGuessSubmit = () => {
     console.log("Guess Submitted:", guess);
     //Add logic to process the guess
+    //make the options area appear and fill with options
+    //make it appear:
+    setShowDropdoown(true);
+
   };
 
   //html content that is being rendered in index.html
@@ -169,13 +181,15 @@ function App() {
       <h1>Slotify - Guess the Song!</h1>
       
       
-      
-      {/* playlist button */}
-      <div>
-          <input type="text" id="playlistInput" value={playlistLink} onChange={handlePlaylistChange} placeholder="Enter Spotify Playlist Link..."></input>
-          <button id="submitPlaylist" onClick={handlePlaylistSumbit}>Enter</button>
-      </div>
-      
+      {!playlistSubmitted && (
+        <>
+        {/* playlist button */}
+        <div>
+            <input type="text" id="playlistInput" value={playlistLink} onChange={handlePlaylistChange} placeholder="Enter Spotify Playlist Link..."></input>
+            <button id="submitPlaylist" onClick={handlePlaylistSumbit}>Enter</button>
+        </div>
+        </>
+      )}
       {/* <!-- Score Display --> */}
       <div>Score: <span id="score">0</span>/<span id="totalSongs">0</span></div>
       
@@ -186,8 +200,11 @@ function App() {
       </div>
       
       {/* <!-- Dropdown for Guess Selection --> */}
-      <select id="guessOptions" style={{display: "none"}} ></select>
-      
+      <select id="guessOptions" style={{display: showDropdown ? "block" : "none"}} >
+      <option value="">Select your guess</option>
+      {/* Dynamically add song options here */}
+      </select>
+
       {/* <!-- Wordle-style Guess History --> */}
       <div id="guessHistory"></div>
       
