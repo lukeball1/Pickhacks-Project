@@ -3,6 +3,7 @@ import './App.css';
 import React, { useEffect, useState, useMemo } from 'react';
 import { Buffer } from 'buffer';
 import SpotifyWebApi from 'spotify-web-api-js';
+import "https://sdk.scdn.co/spotify-player.js";
 
 
 
@@ -34,7 +35,7 @@ async function authorize() {
   const codeChallenge = base64encode(hashed);
 
   var redirect_uri = "http://localhost:5173";
-  var scope = ["user-library-read"];
+  var scope = ["user-library-read", "user-read-playback-state", "user-modify-playback-state", "user-read-currently-playing", "app-remote-control", "streaming", "user-read-playback-position"];
 
   const params = {
     response_type: 'token',
@@ -115,6 +116,7 @@ function App() {
           console.log("user", u);
         })
       }
+      setupPlayer(items.access_token);
     } else {
       authorize();
     }
@@ -195,6 +197,46 @@ function App() {
     </div>
   );
 }
+
+function setupPlayer(tokenArg) {
+    window.onSpotifyWebPlaybackSDKReady = () => {
+      console.log("boobs");
+        const token = tokenArg;
+        const player = new Spotify.Player({
+            name: 'Web Playback SDK Quick Start Player',
+            getOAuthToken: cb => { cb(token); },
+            volume: 0.5
+        });
+
+        // Ready
+        player.addListener('ready', ({ device_id }) => {
+            console.log('Ready with Device ID', device_id);
+        });
+
+        // Not Ready
+        player.addListener('not_ready', ({ device_id }) => {
+            console.log('Device ID has gone offline', device_id);
+        });
+
+        player.addListener('initialization_error', ({ message }) => {
+            console.error(message);
+        });
+
+        player.addListener('authentication_error', ({ message }) => {
+            console.error(message);
+        });
+
+        player.addListener('account_error', ({ message }) => {
+            console.error(message);
+        });
+/*
+        document.getElementById('togglePlay').onclick = function() {
+          player.togglePlay();
+        };
+*/
+        player.connect();
+    }
+  }
 
 export default App;
 
