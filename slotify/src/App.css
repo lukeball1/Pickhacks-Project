@@ -1,38 +1,171 @@
-.App {
-  text-align: center;
+.cherry-bomb-one-regular {
+  font-family: "Cherry Bomb One", system-ui;
+  font-weight: 400;
+  font-style: normal;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.body {
+  background-color: #1e1e2e;
+  color: #ff88ff;
+  font-family: 'Poppins', sans-serif;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  min-height: 100vh;
+  padding: 20px;
+  padding-top: 5%;
+  overflow: hidden;
+  z-index:0;
 }
 
-.App-link {
-  color: #61dafb;
+@keyframes bounce {
+  0%, 100% {
+      transform: translateY(0);
+  }
+  50% {
+      transform: translateY(-50px);
+  }
 }
 
-@keyframes App-logo-spin {
+@keyframes float {
+  0% {
+      transform: translateY(0);
+  }
+  50% {
+      transform: translateY(-10px);
+  }
+  100% {
+      transform: translateY(0);
+  }
+}
+
+.stars {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.star {
+  position: absolute;
+  background-color: white;
+  border-radius: 50%;
+  z-index: -1;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+  animation: twinkle infinite alternate ease-in-out;
+}
+
+@keyframes twinkle {
   from {
-    transform: rotate(0deg);
+      opacity: 0.2;
+      transform: scale(1);
   }
   to {
-    transform: rotate(360deg);
+      opacity: 0.8;
+      transform: scale(1.2);
   }
+}
+
+h1 {
+  position: absolute;
+  top: 20px;
+  width: 100%;
+  text-align: center;
+  animation: bounce 2s infinite ease-in-out;
+  color: #ffcc00;
+  /* font-size: 2.5rem; */
+  font-size: calc(30px + 2vmin);
+  padding-top: 5%;
+  z-index: 1;
+  font-weight: bold;
+  font-family: 'Cherry Bomb One', cursive;
+ 
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding-top: 80px;
+  z-index: 1;
+}
+
+input {
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  position: relative;
+  font-size: 1rem;
+  z-index: 1;
+  color: black;
+}
+
+button {
+  position: relative;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+  z-index: 1;
+}
+
+#submitPlaylist {
+  background-color: #1db954;
+  position: relative;
+  z-index: 1;
+}
+
+#submitPlaylist:hover {
+  background-color: #17a444;
+  z-index: 1;
+}
+
+#submitGuess {
+  background-color: #007bff;
+  z-index: 1;
+}
+
+#submitGuess:hover {
+  background-color: #0056b3;
+  z-index: 1;
+}
+
+#giveUp {
+  background-color: #ff4444;
+  margin-top: 20px;
+  z-index: 1;
+}
+
+#giveUp:hover {
+  background-color: #cc0000;
+  z-index: 1;
+}
+
+#guessHistory {
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  margin-top: 20px;
+  z-index: 1;
+}
+
+select {
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 1rem;
+  color: black;
+  display: block;
+  margin-top: 10px;
+  z-index: 1;
 }

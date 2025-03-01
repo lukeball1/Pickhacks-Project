@@ -4,9 +4,11 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { Buffer } from 'buffer';
 import SpotifyWebApi from 'spotify-web-api-js';
 
+
+
 async function authorize() {
   const authEndpoint = 'https://accounts.spotify.com/authorize';
-  const client_id = "c6f35954ab234ce38383bcaf5d682627";
+  const client_id = "994cffe4b0fc49d7817a16eece086ddc";
 
   const generateRandomString = (length) => {
     const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
@@ -28,14 +30,13 @@ async function authorize() {
       .replace(/\+/g, '-')
       .replace(/\//g, '_');
   }
-
   const hashed = await sha256(codeVerifier);
   const codeChallenge = base64encode(hashed);
 
   var redirect_uri = "http://localhost:5173";
   var scope = ["user-library-read"];
 
-  const params =  {
+  const params = {
     response_type: 'token',
     client_id: client_id,
     scope,
@@ -69,6 +70,19 @@ function App() {
 
   const [user_id, setUser] = useState("");
 
+  const [stars, setStars] = useState([]);
+
+  useEffect(() => {
+      const generatedStars = Array.from({ length: 90 }).map((_, i) => ({
+          id: i,
+          size: Math.random() * 6 + 4 + "px",
+          top: Math.random() * 100 + "vh",
+          left: Math.random() * 100 + "vw",
+          animationDuration: Math.random() * 3 + 2 + "s"
+      }));
+      setStars(generatedStars);
+  }, []);
+
   useEffect(() => {
     const result = getTokenFromURL();
     // console.log(result);
@@ -96,7 +110,7 @@ function App() {
       if (user_id == "") {
         spotify.getMe().then((u) => {
           setUser(u.id);
-          console.log("user", user_id);
+          console.log("user", u);
         })
       }
     } else {
@@ -104,25 +118,55 @@ function App() {
     }
   })
 
+  
+
 
   return (
-    <div className="App">
-      <script module="type" src="index.jsx"></script>
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.jsx</code> and save to test again.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-        <p>{user_id != "" ? user_id : "No user id"}</p>
-      </header>
+    <div className="body">
+      
+      <div className="stars" aria-hidden="true">
+                {stars.map(star => (
+                    <div
+                        key={star.id}
+                        className="star"
+                        style={{
+                            width: star.size,
+                            height: star.size,
+                            top: star.top,
+                            left: star.left,
+                            animationDuration: star.animationDuration
+                        }}
+                    ></div>
+                ))}
+            </div>
+      <h1>Slotify - Guess the Song!</h1>
+      
+      
+      
+      {/* playlist button */}
+      <div>
+          <input type="text" id="playlistInput" placeholder="Enter Spotify Playlist Link..."></input>
+          <button id="submitPlaylist">Enter</button>
+      </div>
+      
+      {/* <!-- Score Display --> */}
+      <div>Score: <span id="score">0</span>/<span id="totalSongs">0</span></div>
+      
+      {/* <!-- Song Guess Input --> */}
+      <div>
+          <input type="text" id="guessInput" placeholder="Guess the song..."></input>
+          <button id="submitGuess">Submit</button>
+      </div>
+      
+      {/* <!-- Dropdown for Guess Selection --> */}
+      <select id="guessOptions" class="hidden"></select>
+      
+      {/* <!-- Wordle-style Guess History --> */}
+      <div id="guessHistory"></div>
+      
+      {/* <!-- Give Up Button --> */}
+      <button id="giveUp">Give Up</button>
+
     </div>
   );
 }
