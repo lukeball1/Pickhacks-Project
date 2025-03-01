@@ -72,6 +72,7 @@ function App() {
 
   const [stars, setStars] = useState([]);
 
+  // function to make the stars spawn and twinkle
   useEffect(() => {
       const generatedStars = Array.from({ length: 90 }).map((_, i) => ({
           id: i,
@@ -83,6 +84,7 @@ function App() {
       setStars(generatedStars);
   }, []);
 
+  //authorization fun
   useEffect(() => {
     const result = getTokenFromURL();
     // console.log(result);
@@ -118,9 +120,32 @@ function App() {
     }
   })
 
-  
+  //making fuction to handle getting the playlist link
+  const [playlistLink, setPlaylistLink] = useState([]);
 
+  const handlePlaylistChange = (event) => {
+    setPlaylistLink(event.target.value);
+  };
 
+  //Function to handle playlist submission
+  const handlePlaylistSumbit = () =>{
+    console.log("Playlist Submitted:", playlistLink);
+    //add logic to process the playlist
+  };
+
+  const [guess, setGuess] = useState("");
+  //Function to handle guess input changes
+  const handleGuessChange = (event) =>{
+    setGuess(event.target.value);
+  };
+
+  //Function to handle guess submission
+  const handleGuessSubmit = () => {
+    console.log("Guess Submitted:", guess);
+    //Add logic to process the guess
+  };
+
+  //html content that is being rendered in index.html
   return (
     <div className="body">
       
@@ -145,8 +170,8 @@ function App() {
       
       {/* playlist button */}
       <div>
-          <input type="text" id="playlistInput" placeholder="Enter Spotify Playlist Link..."></input>
-          <button id="submitPlaylist">Enter</button>
+          <input type="text" id="playlistInput" value={playlistLink} onChange={handlePlaylistChange} placeholder="Enter Spotify Playlist Link..."></input>
+          <button id="submitPlaylist" onClick={handlePlaylistSumbit}>Enter</button>
       </div>
       
       {/* <!-- Score Display --> */}
@@ -154,12 +179,12 @@ function App() {
       
       {/* <!-- Song Guess Input --> */}
       <div>
-          <input type="text" id="guessInput" placeholder="Guess the song..."></input>
-          <button id="submitGuess">Submit</button>
+          <input type="text" id="guessInput" value={guess} onChange={handleGuessChange} placeholder="Guess the song..."></input>
+          <button id="submitGuess" onClick={handleGuessSubmit} >Submit</button>
       </div>
       
       {/* <!-- Dropdown for Guess Selection --> */}
-      <select id="guessOptions" class="hidden"></select>
+      <select id="guessOptions" style={{display: "none"}} ></select>
       
       {/* <!-- Wordle-style Guess History --> */}
       <div id="guessHistory"></div>

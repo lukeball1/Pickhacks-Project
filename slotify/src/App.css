@@ -78,7 +78,8 @@ h1 {
   width: 100%;
   text-align: center;
   animation: bounce 2s infinite ease-in-out;
-  color: #ffcc00;
+  color: #1ED760;
+  font-style: normal;
   /* font-size: 2.5rem; */
   font-size: calc(30px + 2vmin);
   padding-top: 5%;
