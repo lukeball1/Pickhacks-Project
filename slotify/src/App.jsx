@@ -3,10 +3,11 @@ import './App.css';
 import React, { useEffect, useState, useMemo } from 'react';
 import { Buffer } from 'buffer';
 import SpotifyWebApi from 'spotify-web-api-js';
+import "https://sdk.scdn.co/spotify-player.js";
 
 async function authorize() {
   const authEndpoint = 'https://accounts.spotify.com/authorize';
-  const client_id = "c6f35954ab234ce38383bcaf5d682627";
+  const client_id = "4cf0ce643f534f989f183b145dcbc95a";
 
   const generateRandomString = (length) => {
     const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
@@ -33,7 +34,7 @@ async function authorize() {
   const codeChallenge = base64encode(hashed);
 
   var redirect_uri = "http://localhost:5173";
-  var scope = ["user-library-read"];
+  var scope = ["user-library-read", "user-read-playback-state", "user-modify-playback-state", "user-read-currently-playing", "app-remote-control", "streaming", "user-read-playback-position", ];
 
   const params =  {
     response_type: 'token',
@@ -126,6 +127,44 @@ function App() {
     </div>
   );
 }
+
+    window.onSpotifyWebPlaybackSDKReady = () => {
+      console.log("boobs");
+        const token = 'BQBhTZa6EORB0x5BKeeERCs_jcjm65he9N9VfP5HE5RZnzLqbxA41qlzgUbdM5lzrr4YISetA3TFSlf457XDz3GbuFlWt6IyLTnjMibFtf6DgSjj-SCOtV4V0_-iH7aJUR4d2oVfoBHw4TTeF3UkDjJZ5TW8gkYapBBrc7qhXF8TzbQ8yjw3YKhNP9Somdfjsl9d0VDqH3JOmoi9PGSRr6YjnXj3fetJLTwYltSI5DQiLbE77rjOba15youe';
+        const player = new Spotify.Player({
+            name: 'Web Playback SDK Quick Start Player',
+            getOAuthToken: cb => { cb(token); },
+            volume: 0.5
+        });
+
+        // Ready
+        player.addListener('ready', ({ device_id }) => {
+            console.log('Ready with Device ID', device_id);
+        });
+
+        // Not Ready
+        player.addListener('not_ready', ({ device_id }) => {
+            console.log('Device ID has gone offline', device_id);
+        });
+
+        player.addListener('initialization_error', ({ message }) => {
+            console.error(message);
+        });
+
+        player.addListener('authentication_error', ({ message }) => {
+            console.error(message);
+        });
+
+        player.addListener('account_error', ({ message }) => {
+            console.error(message);
+        });
+/*
+        document.getElementById('togglePlay').onclick = function() {
+          player.togglePlay();
+        };
+*/
+        player.connect();
+    }
 
 export default App;
 
