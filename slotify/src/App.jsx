@@ -35,7 +35,7 @@ async function authorize() {
   const codeChallenge = base64encode(hashed);
 
   var redirect_uri = "http://localhost:5173";
-  var scope = ["user-library-read", "user-read-playback-state", "user-modify-playback-state", "user-read-currently-playing", "app-remote-control", "streaming", "user-read-playback-position", ];
+  var scope = ["user-library-read", "user-read-playback-state", "user-modify-playback-state", "user-read-currently-playing", "app-remote-control", "streaming", "user-read-playback-position"];
 
   const params = {
     response_type: 'token',
@@ -114,6 +114,7 @@ function App() {
           console.log("user", u);
         })
       }
+      setupPlayer(items.access_token);
     } else {
       authorize();
     }
@@ -172,9 +173,10 @@ function App() {
   );
 }
 
+function setupPlayer(tokenArg) {
     window.onSpotifyWebPlaybackSDKReady = () => {
       console.log("boobs");
-        const token = 'BQBhTZa6EORB0x5BKeeERCs_jcjm65he9N9VfP5HE5RZnzLqbxA41qlzgUbdM5lzrr4YISetA3TFSlf457XDz3GbuFlWt6IyLTnjMibFtf6DgSjj-SCOtV4V0_-iH7aJUR4d2oVfoBHw4TTeF3UkDjJZ5TW8gkYapBBrc7qhXF8TzbQ8yjw3YKhNP9Somdfjsl9d0VDqH3JOmoi9PGSRr6YjnXj3fetJLTwYltSI5DQiLbE77rjOba15youe';
+        const token = tokenArg;
         const player = new Spotify.Player({
             name: 'Web Playback SDK Quick Start Player',
             getOAuthToken: cb => { cb(token); },
@@ -209,6 +211,7 @@ function App() {
 */
         player.connect();
     }
+  }
 
 export default App;
 
