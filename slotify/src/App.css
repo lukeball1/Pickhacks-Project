@@ -118,6 +118,7 @@ button {
   border-radius: 8px;
   font-size: 1rem;
   font-weight: bold;
+  background-color: #17A589;
   color: white;
   cursor: pointer;
   transition: 0.3s;
@@ -205,4 +206,90 @@ select {
   background-color: #bbb; /* Default grey */
   color: black;
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.endGame{
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 1));
+  color: white;
+  padding: 2rem;
+  z-index: 50;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.endGame.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.endGame.hide {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.endGame-title {
+  font-size: 4rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  animation: bounce 1.5s infinite;
+}
+
+.endGame-subtitle {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.endGame-song {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.endGame-button {
+  padding: 1rem 2rem;
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: black;
+  background: linear-gradient(90deg, #34d399, #3b82f6);
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease;
+}
+
+.endGame-button:hover {
+  transform: scale(1.05);
+}
+
+.endGame-button-startOver{
+  padding: 1rem 2rem;
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: black;
+  background: linear-gradient(90deg, #f472b6, #a78bfa);
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease;
+}
+
+.endGame-button-startOver:hover{
+  transform: scale(1.05);
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }

@@ -102,15 +102,30 @@ function App() {
   //for end game scenario
   const [gameOver, setGameOver] = useState(false);
   const [correctSong, setCorrectSong] = useState("Song Title - Artist");
+  const [isWin, setIsWin] = useState(false);
+
 
   const handleEndGame = () => {
-    setGameOver(true);
+    //handle the endgame here -> when user selects start over
+    setBoxValues([]);
+    window.location.reload();
   };
 
-  const handlePlayAgain = () => {
-    setGameOver(false);
+   const handlePlayAgain = () => {
+      handlePlaylistSumbit();
+      setGuess("");
+      //setShowDropdoown(false);
+      setGameOver(false);
+      setIsWin(false);
+      setBoxValues([]);
+      {
+        showDropdown && (
+          <button id="listen" onClick={() => playCurrentSongStart()}>Listen</button>
+        )
+      }
+      //setShowDropdoown(false);
     //Reset the game state here as needed
-  }
+   }
 
   // function to make the stars spawn and twinkle
   useEffect(() => {
@@ -304,6 +319,8 @@ function App() {
       // Check if the selected song matches the random song
     if (selectedTrack.id === randomSong.track.id) {
       setScore(score + 1); // Increment score for correct guess
+      setIsWin(true); 
+      //handleEndGame();
       console.log("Correct guess!");
     }
 
@@ -414,9 +431,31 @@ function App() {
         </div>
         ))}
       </div>
-        
-      
 
+      {isWin && (
+          <div className={`endGame ${(gameOver) ? "display: block" : "display: none"}`}> 
+            <h2 className="endGame-title" >Game Over!</h2>
+              <p className="endGame-subtitle">The correct song was:</p>
+              <p className="endgame-song">{randomSong.track.name} by {randomSong.track.artists[0].name} on the {randomSong.track.album.name} album</p>
+              <button className="endGame-button-startOver" 
+                onClick={() => handleEndGame()} 
+                >
+
+                Start Over
+              </button>
+              <button
+                className="endGame-button"
+                onClick={() => handlePlayAgain()}
+              >
+                
+                Play Again
+              </button>
+        
+
+          </div>
+        )
+      }
+        
     </div>
   );
 }
