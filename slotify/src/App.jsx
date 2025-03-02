@@ -5,7 +5,17 @@ import { Buffer } from 'buffer';
 import SpotifyWebApi from 'spotify-web-api-js';
 import "https://sdk.scdn.co/spotify-player.js";
 
+let deviceID = "";
+let deviedReady = false
+let theToken = "";
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/*************************************************************/
+// AUTHORIZE
+/*************************************************************/
 
 async function authorize() {
   const authEndpoint = 'https://accounts.spotify.com/authorize';
@@ -64,6 +74,10 @@ function getTokenFromURL() {
     }, {})
 }
 
+/*************************************************************/
+// APP
+/*************************************************************/
+
 function App() {
   const [spotifyToken, setSpotifyToken] = useState("");
 
@@ -109,6 +123,7 @@ function App() {
         return initial;
       }, {})
       spotify.setAccessToken(items.access_token);
+      theToken = items.access_token;
       // console.log("Access token", spotify.getAccessToken());
       if (user_id == "") {
         spotify.getMe().then((u) => {
@@ -138,6 +153,19 @@ function App() {
     //add logic to process the playlist
     //if the playlist is valid and loads properly:
     setPlaylistSubmitted(true); //hides input & button
+  };
+
+  async function handleGiveUp() {
+    console.log("transfering to: ", deviceID, typeof deviceID);
+    console.log("with token: ", theToken);
+    // transfer playback
+    let data = {device_ids: [deviceID]};
+    await fetch("https://api.spotify.com/v1/me/player", {method: "PUT", headers: {"Authorization": "Bearer " + theToken}, body: JSON.stringify(data)});
+    // sleep(3000);
+    // queue song and skip to (working)
+    await fetch("https://api.spotify.com/v1/me/player/queue?uri=spotify%3Atrack%3A4iV5W9uYEdYUVa79Axb7Rh", {method: "POST", headers: {"Authorization": "Bearer " + theToken}});
+    await fetch("https://api.spotify.com/v1/me/player/next", {method: "POST", headers: {"Authorization": "Bearer " + theToken}});
+
   };
 
   const [guess, setGuess] = useState("");
@@ -209,11 +237,15 @@ function App() {
       <div id="guessHistory"></div>
       
       {/* <!-- Give Up Button --> */}
-      <button id="giveUp">Give Up</button>
+      <button id="giveUp" onClick={handleGiveUp}>Give Up</button>
 
     </div>
   );
 }
+
+/*************************************************************/
+// PLAYER
+/*************************************************************/
 
 function setupPlayer(tokenArg) {
     window.onSpotifyWebPlaybackSDKReady = () => {
@@ -228,11 +260,14 @@ function setupPlayer(tokenArg) {
         // Ready
         player.addListener('ready', ({ device_id }) => {
             console.log('Ready with Device ID', device_id);
+            deviceID = device_id;
+            deviedReady = true;
         });
 
         // Not Ready
         player.addListener('not_ready', ({ device_id }) => {
             console.log('Device ID has gone offline', device_id);
+            devicReady = false;
         });
 
         player.addListener('initialization_error', ({ message }) => {
