@@ -6,8 +6,9 @@ import SpotifyWebApi from 'spotify-web-api-js';
 import "https://sdk.scdn.co/spotify-player.js";
 
 let deviceID = "";
-let deviedReady = false
+let deviceReady = false
 let theToken = "";
+let player = null;
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -45,12 +46,12 @@ async function authorize() {
   const codeChallenge = base64encode(hashed);
 
   var redirect_uri = "http://localhost:5173";
-  var scope = ["user-library-read", "user-read-playback-state", "user-modify-playback-state", "user-read-currently-playing", "app-remote-control", "streaming", "user-read-playback-position"];
+  var scope = ["user-library-read", "user-read-playback-state", "user-modify-playback-state", "user-read-currently-playing", "app-remote-control", "streaming", "user-read-playback-position", "web-playback", "user-read-email", "playlist-read-private", "playlist-read-public", "playlist-read-collaborative"];
 
   const params = {
     response_type: 'token',
     client_id: client_id,
-    scope,
+    scope: scope,
     code_challenge_method: 'S256',
     code_challenge: codeChallenge,
     redirect_uri: redirect_uri,
@@ -144,7 +145,6 @@ function App() {
     } else {
       authorize();
     }
-    switchOutput();
   })
 
 
@@ -158,6 +158,7 @@ function App() {
 
   //Function to handle playlist submission
   const handlePlaylistSumbit = () => {
+    switchOutput();
     console.log("Playlist Submitted:", playlistLink);
     //add logic to process the playlist
     //if the playlist is valid and loads properly:
@@ -173,10 +174,14 @@ function App() {
       console.log(result.items);
       const rand = randomIntInRange(0, result.items.length);
       setRandomSong(result.items[rand]);
-      playSong(result.items[rand].track.id);
     });
-    
+    setShowDropdoown(true);
   };
+
+  async function playCurrentSongStart() {
+    await playSong(randomSong.track.id);
+    // spotify.seek(0);
+  }
   
   async function switchOutput() {
     let data = {device_ids: [deviceID]};
@@ -188,11 +193,16 @@ function App() {
     // queue song and skip to (working)
 
     console.log(id);
-    await fetch(`https://api.spotify.com/v1/me/player/queue?uri=spotify%3Atrack%${id}`, {method: "POST", headers: {"Authorization": "Bearer " + spotify.getAccessToken()}});
+    await fetch(`https://api.spotify.com/v1/me/player/queue?uri=spotify%3Atrack%3A${id}`, {method: "POST", headers: {"Authorization": "Bearer " + spotify.getAccessToken()}});
     await fetch("https://api.spotify.com/v1/me/player/next", {method: "POST", headers: {"Authorization": "Bearer " + spotify.getAccessToken()}});
 
 
-    // await sleep(3000);
+    await sleep(3000);
+    await spotify.pause();
+  }
+
+  function albumCover(album) {
+    return album.images[0].url;
   }
 
 
@@ -224,7 +234,7 @@ function App() {
     //Add logic to process the guess
     //make the options area appear and fill with options
     //make it appear:
-    const list = playlistTracks.filter((item) => { return item.track.name.includes(guess) })
+    const list = playlistTracks.filter((item) => { return item.track.name.toLowerCase().includes(guess.toLowerCase()) })
     setFilteredTracks(list);
     console.log(list);
     setShowDropdoown(true);
@@ -351,6 +361,11 @@ function App() {
       
       {/* <!-- Give Up Button --> */}
       <button id="giveUp" onClick={handleGiveUp}>Give Up</button>
+      {
+        showDropdown && (
+          <button id="listen" onClick={() => playCurrentSongStart()}>Listen</button>
+        )
+      }
 
       {/* Result Boxes */}
       <div className="result-boxes-container">
@@ -379,7 +394,7 @@ function App() {
 function setupPlayer(tokenArg) {
     window.onSpotifyWebPlaybackSDKReady = () => {
         const token = tokenArg;
-        const player = new Spotify.Player({
+        player = new Spotify.Player({
             name: 'Web Playback SDK Quick Start Player',
             getOAuthToken: cb => { cb(token); },
             volume: 0.5
@@ -389,13 +404,13 @@ function setupPlayer(tokenArg) {
         player.addListener('ready', ({ device_id }) => {
             console.log('Ready with Device ID', device_id);
             deviceID = device_id;
-            deviedReady = true;
+            deviceReady = true;
         });
 
         // Not Ready
         player.addListener('not_ready', ({ device_id }) => {
             console.log('Device ID has gone offline', device_id);
-            devicReady = false;
+            deviceReady = false;
         });
 
         player.addListener('initialization_error', ({ message }) => {
@@ -409,6 +424,8 @@ function setupPlayer(tokenArg) {
         player.addListener('account_error', ({ message }) => {
             console.error(message);
         });
+
+        
 /*
         document.getElementById('togglePlay').onclick = function() {
           player.togglePlay();
