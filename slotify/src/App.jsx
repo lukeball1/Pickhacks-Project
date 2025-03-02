@@ -264,10 +264,10 @@ function App() {
         ...prev,
         {
           songName: filteredTracks[selectedOption].track.name,
-          artist: "AA",
+          artist: filteredTracks[selectedOption].track.artists[0].name,
           album: filteredTracks[selectedOption].track.album.name,
           year: filteredTracks[selectedOption].track.album.release_date,
-          genre: filteredTracks[selectedOption].track.name
+          genre: filteredTracks[selectedOption].track.explicit //is explicit?
         }
       ]);
     }
@@ -350,11 +350,12 @@ function App() {
       <div className="result-boxes-container">
         {boxValues.map((value, index) => (
           <div key={index} className="result-boxes">
-          <div className="box" style={{ backgroundColor: {/* function to get color */} }}> {value.songName} </div>
-          <div className="box" style={{ backgroundColor: {/* function to get color */} }}> {value.artist} </div>
-          <div className="box" style={{ backgroundColor: {/* function to get color */} }}> {value.album} </div>
-          <div className="box" style={{ backgroundColor: {/* function to get color */} }}> {value.year} </div>
-          <div className="box" style={{ backgroundColor: {/* function to get color */} }}> {value.genre} </div>
+          <div className="box" style={{ backgroundColor: (value.songName == randomSong.track.name)? "#1ED760" : "#bbb" }}> Song Name:{value.songName} </div>
+          <div className="box" style={{ backgroundColor: (value.artist == randomSong.track.artists[0].name)? "#1ED760" : "#bbb" }}> Artist: {value.artist} </div>
+          <div className="box" style={{ backgroundColor: (value.album == randomSong.track.album.name)? "#1ED760" : "#bbb" }}> Album: {value.album} </div>
+          <div className="box" style={{ backgroundColor: (value.year == randomSong.track.album.release_date)? "#1ED760" : "#bbb" }}> Date: {value.year} </div>
+          {/* note here, value.genre really tells if the song is explicit or not */}
+          <div className="box" style={{ backgroundColor: (value.genre == randomSong.track.explicit)? "#1ED760" : "#bbb" }}> Explicit: {(value.genre == true) ? "Yes" : "No"} </div>
         </div>
         ))}
       </div>

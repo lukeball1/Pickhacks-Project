@@ -194,6 +194,7 @@ select {
   height: 50px;
   display: flex;
   flex-direction: row;
+  z-index: 1;
   align-items: center;
   justify-content: center;
   font-weight: bold;
