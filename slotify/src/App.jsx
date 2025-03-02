@@ -46,7 +46,7 @@ async function authorize() {
   const codeChallenge = base64encode(hashed);
 
   var redirect_uri = "http://localhost:5173";
-  var scope = ["user-library-read", "user-read-playback-state", "user-modify-playback-state", "user-read-currently-playing", "app-remote-control", "streaming", "user-read-playback-position", "user-read-email", "playlist-read-private", "playlist-read-public", "playlist-read-collaborative"];
+  var scope = ["user-library-read", "user-read-playback-state", "user-modify-playback-state", "user-read-currently-playing", "app-remote-control", "streaming", "user-read-playback-position", "playlist-read-private", "playlist-read-collaborative"];
 
   const params = {
     response_type: 'token',
