@@ -356,7 +356,7 @@ function App() {
       <div className="result-boxes-container">
         {boxValues.map((value, index) => (
           <div key={index} className="result-boxes">
-          <div className="box" style={{ backgroundColor: (value.songName == randomSong.track.name)? "#1ED760" : "#bbb" }}> Song Name:{value.songName} </div>
+          <div className="box" style={{ backgroundColor: (value.songName == randomSong.track.name)? "#1ED760" : "#bbb" }}> Song Name: {value.songName} </div>
           <div className="box" style={{ backgroundColor: (value.artist == randomSong.track.artists[0].name)? "#1ED760" : "#bbb" }}> Artist: {value.artist} </div>
           <div className="box" style={{ backgroundColor: (value.album == randomSong.track.album.name)? "#1ED760" : "#bbb" }}> Album: {value.album} </div>
           <div className="box" style={{ backgroundColor: (value.year == randomSong.track.album.release_date)? "#1ED760" : "#bbb" }}> Date: {value.year} </div>

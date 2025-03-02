@@ -77,6 +77,9 @@ h1 {
   top: 20px;
   width: 100%;
   text-align: center;
+  display: inherit;
+  flex-direction: inherit;
+
   animation: bounce 2s infinite ease-in-out;
   color: #1ED760;
   font-style: normal;
@@ -191,7 +194,7 @@ select {
 
 .box{
   width: 120px;
-  height: 50px;
+  height: 75px;
   display: flex;
   flex-direction: row;
   z-index: 1;
