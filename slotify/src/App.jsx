@@ -390,7 +390,7 @@ function App() {
       { playlistSubmitted &&
         (<div>
           <input type="text" id="guessInput" value={guess} onChange={handleGuessChange} placeholder="Guess the song..."></input>
-          <button id="submitGuess" onClick={handleGuessSubmit} >Submit</button>
+          <button id="submitGuess" onClick={handleGuessSubmit} >Search</button>
         </div>)
       }
       
