@@ -64,6 +64,10 @@ function getTokenFromURL() {
     }, {})
 }
 
+function randomIntInRange(min, max) {
+  return Math.floor(Math.random() * (max - min) + min);
+}
+
 function App() {
   const [spotifyToken, setSpotifyToken] = useState("");
 
@@ -72,6 +76,12 @@ function App() {
   const [user_id, setUser] = useState("");
 
   const [stars, setStars] = useState([]);
+
+  const [playlistTracks, setPlaylistTracks] = useState([]);
+  const [filteredTracks, setFilteredTracks] = useState([]);
+
+  const [randomSong, setRandomSong] = useState("");
+  const [guessHistory, setGuessHistory] = useState([]);
 
   // function to make the stars spawn and twinkle
   useEffect(() => {
@@ -140,6 +150,16 @@ function App() {
     if(!(playlistLink == "")){
       setPlaylistSubmitted(true); //hides input & button
     }
+    const parts = playlistLink.split("/");
+    const section = parts[parts.length - 1];
+    const id = section.split("?")[0];
+    var tracks = [];
+    spotify.getPlaylistTracks(id).then((result) => {
+      setPlaylistTracks(result.items);
+      console.log(result.items);
+      const rand = randomIntInRange(0, result.items.length);
+      setRandomSong(result.items[rand]);
+    });
   };
 
   const [guess, setGuess] = useState("");
@@ -157,8 +177,11 @@ function App() {
     //Add logic to process the guess
     //make the options area appear and fill with options
     //make it appear:
+    const list = playlistTracks.filter((item) => { return item.track.name.includes(guess) })
+    setFilteredTracks(list);
+    console.log(list);
     setShowDropdoown(true);
-
+    // console.log("rand", randomSong);
   };
   //erase this when okay
   const [showResultBoxes, setShowResultBoxes] = useState(false); //T/F show result boxes
@@ -174,8 +197,16 @@ function App() {
     genre: "#bbb"
   });
 
+  const [boxValues, setBoxValues] = useState({ //holds color values for the result boxes
+    songName: "Name",
+    artist: "Artist",
+    album: "Album",
+    year: "Year",
+    genre: "Genre"
+  });
+
   //handles dropdown selection
-  const handleDropdownChange = (event) =>{
+  const handleDropdownChange = (event) => {
     setSelectedOption(event.target.value);
   };
 
@@ -246,12 +277,15 @@ function App() {
       
       {/* <!-- Dropdown for Guess Selection --> */}
       {showDropdown && (
-        <select id="guessOptions" onChange={handleDropdownChange}>
+        <select id="guessOptions" style={{display: showDropdown ? "block" : "none"}} onChange={handleDropdownChange} >
         <option value="">Select your guess</option>
-        <option value="Song1">Song 1</option>
-        <option value="Song2">Song 2</option>
-        <option value="Song3">Song 3</option>
-        {/* Dynamically add song options here */}
+        {
+          filteredTracks.map((item, index) => {
+            return <option value={index}>
+              {item.track.name}
+            </option>
+          })
+        }
         </select>
       )}
 
@@ -287,7 +321,6 @@ function App() {
 
 function setupPlayer(tokenArg) {
     window.onSpotifyWebPlaybackSDKReady = () => {
-      console.log("boobs");
         const token = tokenArg;
         const player = new Spotify.Player({
             name: 'Web Playback SDK Quick Start Player',
