@@ -13,6 +13,8 @@ This project was made in connection with the Spotify Web API. To receive full ac
 
 This project is compliant with the Spotify Web API Terms of Service, but requires at least 6 weeks to verify the source code to let anyone receive full access with their spotify account. We do apologize for this inconvienence. 
 
+We **strongly** encourage you to run the website on a FireFox Browser, as that has the strongest support with the Spotify Web Player SDK
+
 **Note: This application relies on Spotify integrations that are exclusive to Spotify Premium members. The app is not usable without Spotify Premium.**
 1. Upon visiting the site, you will first be met with a Spotify login page. You must login and grant the Slotify application access to the listed permissions for the app to function.
 2. Enter the link to any public playlist with the songs you want in your song bank during the guessing game.
