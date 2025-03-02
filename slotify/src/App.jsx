@@ -86,6 +86,8 @@ function randomIntInRange(min, max) {
 function App() {
   const [spotifyToken, setSpotifyToken] = useState("");
 
+  const [score, setScore] = useState(0);
+
   const spotify = new SpotifyWebApi();
 
   const [user_id, setUser] = useState("");
@@ -276,7 +278,16 @@ function App() {
           genre: '#bbb'
         }
       ]);
+
+      const selectedTrack = filteredTracks[selectedOption].track;
       const artist = filteredTracks[selectedOption].track.artists.reduce((a, b) => { return a + ", " + b})
+      
+      // Check if the selected song matches the random song
+    if (selectedTrack.id === randomSong.track.id) {
+      setScore(score + 1); // Increment score for correct guess
+      console.log("Correct guess!");
+    }
+
       setBoxValues(prev => [
         ...prev,
         {
@@ -330,7 +341,8 @@ function App() {
         </>
       )}
       {/* <!-- Score Display --> */}
-      <div>Score: <span id="score">0</span>/<span id="totalSongs">0</span></div>
+      <div>Score: <span id="score">{score}</span>/<span id="totalSongs">0</span></div>
+
       
       {/* <!-- Song Guess Input --> */}
       <div>
