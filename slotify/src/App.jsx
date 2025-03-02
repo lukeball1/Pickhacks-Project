@@ -137,7 +137,9 @@ function App() {
     console.log("Playlist Submitted:", playlistLink);
     //add logic to process the playlist
     //if the playlist is valid and loads properly:
-    setPlaylistSubmitted(true); //hides input & button
+    if(!(playlistLink == "")){
+      setPlaylistSubmitted(true); //hides input & button
+    }
   };
 
   const [guess, setGuess] = useState("");
@@ -157,6 +159,49 @@ function App() {
     //make it appear:
     setShowDropdoown(true);
 
+  };
+  //erase this when okay
+  const [showResultBoxes, setShowResultBoxes] = useState(false); //T/F show result boxes
+  
+  //new
+  const [resultBoxSets, setResultBoxSets] = useState([]);
+  const [selectedOption, setSelectedOption] = useState(""); //holds the selected song from user
+  const [boxColors, setBoxColors] = useState({ //holds color values for the result boxes
+    songName: "#bbb",
+    artist: "#bbb",
+    album: "#bbb",
+    year: "#bbb",
+    genre: "#bbb"
+  });
+
+  //handles dropdown selection
+  const handleDropdownChange = (event) =>{
+    setSelectedOption(event.target.value);
+  };
+
+  //function to reveal result boxes when an option is submitted
+  const handleSubmitSelection = () => {
+    if(selectedOption) {
+      setShowResultBoxes(true);
+      setResultBoxSets(prevSets => [
+        ...prevSets,
+        {
+          songName: "#bbb",
+          artist: '#bbb',
+          album: '#bbb',
+          year: '#bbb',
+          genre: '#bbb'
+        }
+      ]);
+    }
+  };
+
+  //Function to update the box colors
+  const updateBoxColor = (box, color) => {
+    setBoxColors((prevColors) =>({
+      ...prevColors,
+      [box]: color
+    }));
   };
 
   //html content that is being rendered in index.html
@@ -200,16 +245,41 @@ function App() {
       </div>
       
       {/* <!-- Dropdown for Guess Selection --> */}
-      <select id="guessOptions" style={{display: showDropdown ? "block" : "none"}} >
-      <option value="">Select your guess</option>
-      {/* Dynamically add song options here */}
-      </select>
+      {showDropdown && (
+        <select id="guessOptions" onChange={handleDropdownChange}>
+        <option value="">Select your guess</option>
+        <option value="Song1">Song 1</option>
+        <option value="Song2">Song 2</option>
+        <option value="Song3">Song 3</option>
+        {/* Dynamically add song options here */}
+        </select>
+      )}
+
+      {/* Submit Selected Option */}
+      {showDropdown && (
+        <button onClick={handleSubmitSelection} style={{backgroundColor: "#666699"}}> Submit </button>
+      )}
 
       {/* <!-- Wordle-style Guess History --> */}
       <div id="guessHistory"></div>
       
       {/* <!-- Give Up Button --> */}
       <button id="giveUp">Give Up</button>
+
+      {/* Result Boxes */}
+      <div className="result-boxes-container">
+        {resultBoxSets.map((boxColors, index) => (
+          <div key={index} className="result-boxes">
+          <div className="box" style={{ backgroundColor: boxColors.songName }}> Song Name: </div>
+          <div className="box" style={{ backgroundColor: boxColors.artist }}> Artist: </div>
+          <div className="box" style={{ backgroundColor: boxColors.album }}> Album: </div>
+          <div className="box" style={{ backgroundColor: boxColors.year }}> Year: </div>
+          <div className="box" style={{ backgroundColor: boxColors.genre }}> Genre: </div>
+        </div>
+        ))}
+      </div>
+        
+      
 
     </div>
   );
