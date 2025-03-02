@@ -95,7 +95,6 @@ function App() {
   const [filteredTracks, setFilteredTracks] = useState([]);
 
   const [randomSong, setRandomSong] = useState("");
-  const [guessHistory, setGuessHistory] = useState([]);
 
   // function to make the stars spawn and twinkle
   useEffect(() => {
@@ -145,9 +144,9 @@ function App() {
     } else {
       authorize();
     }
+    switchOutput();
   })
 
-  
 
   //making fuction to handle getting the playlist link
   const [playlistLink, setPlaylistLink] = useState([]);
@@ -158,7 +157,7 @@ function App() {
   };
 
   //Function to handle playlist submission
-  const handlePlaylistSumbit = () =>{
+  const handlePlaylistSumbit = () => {
     console.log("Playlist Submitted:", playlistLink);
     //add logic to process the playlist
     //if the playlist is valid and loads properly:
@@ -174,32 +173,39 @@ function App() {
       console.log(result.items);
       const rand = randomIntInRange(0, result.items.length);
       setRandomSong(result.items[rand]);
+      playSong(result.items[rand].track.id);
     });
+    
   };
+  
+  async function switchOutput() {
+    let data = {device_ids: [deviceID]};
+    await fetch("https://api.spotify.com/v1/me/player", {method: "PUT", headers: {"Authorization": "Bearer " + spotify.getAccessToken()}, body: JSON.stringify(data)});
+  }
+
+  async function playSong(id) {
+    // sleep(3000);
+    // queue song and skip to (working)
+
+    console.log(id);
+    await fetch(`https://api.spotify.com/v1/me/player/queue?uri=spotify%3Atrack%${id}`, {method: "POST", headers: {"Authorization": "Bearer " + spotify.getAccessToken()}});
+    await fetch("https://api.spotify.com/v1/me/player/next", {method: "POST", headers: {"Authorization": "Bearer " + spotify.getAccessToken()}});
+
+
+    // await sleep(3000);
+  }
+
 
   async function handleGiveUp() {
     console.log("transfering to: ", deviceID, typeof deviceID);
     console.log("with token: ", theToken);
     // transfer playback
     let data = {device_ids: [deviceID]};
-    await fetch("https://api.spotify.com/v1/me/player", {method: "PUT", headers: {"Authorization": "Bearer " + theToken}, body: JSON.stringify(data)});
+    await fetch("https://api.spotify.com/v1/me/player", {method: "PUT", headers: {"Authorization": "Bearer " + spotify.getAccessToken()}, body: JSON.stringify(data)});
     // sleep(3000);
     // queue song and skip to (working)
-    await fetch("https://api.spotify.com/v1/me/player/queue?uri=spotify%3Atrack%3A4iV5W9uYEdYUVa79Axb7Rh", {method: "POST", headers: {"Authorization": "Bearer " + theToken}});
-    await fetch("https://api.spotify.com/v1/me/player/next", {method: "POST", headers: {"Authorization": "Bearer " + theToken}});
-
-  };
-
-  async function handleGiveUp() {
-    console.log("transfering to: ", deviceID, typeof deviceID);
-    console.log("with token: ", theToken);
-    // transfer playback
-    let data = {device_ids: [deviceID]};
-    await fetch("https://api.spotify.com/v1/me/player", {method: "PUT", headers: {"Authorization": "Bearer " + theToken}, body: JSON.stringify(data)});
-    // sleep(3000);
-    // queue song and skip to (working)
-    await fetch("https://api.spotify.com/v1/me/player/queue?uri=spotify%3Atrack%3A4iV5W9uYEdYUVa79Axb7Rh", {method: "POST", headers: {"Authorization": "Bearer " + theToken}});
-    await fetch("https://api.spotify.com/v1/me/player/next", {method: "POST", headers: {"Authorization": "Bearer " + theToken}});
+    await fetch("https://api.spotify.com/v1/me/player/queue?uri=spotify%3Atrack%3A4iV5W9uYEdYUVa79Axb7Rh", {method: "POST", headers: {"Authorization": "Bearer " + spotify.getAccessToken()}});
+    await fetch("https://api.spotify.com/v1/me/player/next", {method: "POST", headers: {"Authorization": "Bearer " + spotify.getAccessToken()}});
 
   };
 
@@ -414,3 +420,7 @@ function setupPlayer(tokenArg) {
 export default App;
 
 // https://accounts.spotify.com/en/login?continue=https%3A%2F%2Faccounts.spotify.com%2Fauthorize%3Fscope%3Duser-library-read%26response_type%3Dcode%26redirect_uri%3Dhttps%253A%252F%252Fwww.spotify.com%252F%26client_id%3D0c82f99988594536ac3c77bb81d9dcc9
+
+
+
+
