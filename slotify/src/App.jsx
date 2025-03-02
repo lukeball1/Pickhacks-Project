@@ -383,7 +383,7 @@ function App() {
         </>
       )}
       {/* <!-- Score Display --> */}
-      <div>Score: <span id="score">{score}</span>/<span id="totalSongs">0</span></div>
+      <div>Score: <span id="score">{score}</span><span id="totalSongs"></span></div>
 
       
       {/* <!-- Song Guess Input --> */}
