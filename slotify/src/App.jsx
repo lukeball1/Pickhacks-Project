@@ -131,7 +131,12 @@ function App() {
     if (result.access_token) {
       // spotify.setAccessToken(result.access_token);
       console.log(result.access_token);
-      document.cookie = `access_token=${result.access_token}=;expires=${result.expires_in}`;
+      var date = new Date();
+      date.setUTCHours(date.getUTCHours() + 1);
+      document.cookie = `access_token=${result.access_token}; expires=${date.toUTCString()}`;
+      // console.log(date.toUTCString());
+      // console.log(document.cookie);
+      document.location.hash = "";
     }
 
     if (document.cookie.length > 2) {
@@ -150,6 +155,7 @@ function App() {
       spotify.setAccessToken(items.access_token);
       theToken = items.access_token;
       // console.log("Access token", spotify.getAccessToken());
+      // console.log(items.expires);
       if (user_id == "") {
         spotify.getMe().then((u) => {
           setUser(u.id);
@@ -358,10 +364,12 @@ function App() {
 
       
       {/* <!-- Song Guess Input --> */}
-      <div>
+      { playlistSubmitted &&
+        (<div>
           <input type="text" id="guessInput" value={guess} onChange={handleGuessChange} placeholder="Guess the song..."></input>
           <button id="submitGuess" onClick={handleGuessSubmit} >Submit</button>
-      </div>
+        </div>)
+      }
       
       {/* <!-- Dropdown for Guess Selection --> */}
       {showDropdown && (
@@ -370,7 +378,7 @@ function App() {
         {
           filteredTracks.map((item, index) => {
             return <option value={index}>
-              {item.track.name}
+              {item.track.name} - {item.track.artists[0].name}
             </option>
           })
         }
