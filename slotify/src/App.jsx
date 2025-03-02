@@ -74,6 +74,10 @@ function getTokenFromURL() {
     }, {})
 }
 
+function randomIntInRange(min, max) {
+  return Math.floor(Math.random() * (max - min) + min);
+}
+
 /*************************************************************/
 // APP
 /*************************************************************/
@@ -86,6 +90,12 @@ function App() {
   const [user_id, setUser] = useState("");
 
   const [stars, setStars] = useState([]);
+
+  const [playlistTracks, setPlaylistTracks] = useState([]);
+  const [filteredTracks, setFilteredTracks] = useState([]);
+
+  const [randomSong, setRandomSong] = useState("");
+  const [guessHistory, setGuessHistory] = useState([]);
 
   // function to make the stars spawn and twinkle
   useEffect(() => {
@@ -152,7 +162,32 @@ function App() {
     console.log("Playlist Submitted:", playlistLink);
     //add logic to process the playlist
     //if the playlist is valid and loads properly:
-    setPlaylistSubmitted(true); //hides input & button
+    if(!(playlistLink == "")){
+      setPlaylistSubmitted(true); //hides input & button
+    }
+    const parts = playlistLink.split("/");
+    const section = parts[parts.length - 1];
+    const id = section.split("?")[0];
+    var tracks = [];
+    spotify.getPlaylistTracks(id).then((result) => {
+      setPlaylistTracks(result.items);
+      console.log(result.items);
+      const rand = randomIntInRange(0, result.items.length);
+      setRandomSong(result.items[rand]);
+    });
+  };
+
+  async function handleGiveUp() {
+    console.log("transfering to: ", deviceID, typeof deviceID);
+    console.log("with token: ", theToken);
+    // transfer playback
+    let data = {device_ids: [deviceID]};
+    await fetch("https://api.spotify.com/v1/me/player", {method: "PUT", headers: {"Authorization": "Bearer " + theToken}, body: JSON.stringify(data)});
+    // sleep(3000);
+    // queue song and skip to (working)
+    await fetch("https://api.spotify.com/v1/me/player/queue?uri=spotify%3Atrack%3A4iV5W9uYEdYUVa79Axb7Rh", {method: "POST", headers: {"Authorization": "Bearer " + theToken}});
+    await fetch("https://api.spotify.com/v1/me/player/next", {method: "POST", headers: {"Authorization": "Bearer " + theToken}});
+
   };
 
   async function handleGiveUp() {
@@ -183,8 +218,62 @@ function App() {
     //Add logic to process the guess
     //make the options area appear and fill with options
     //make it appear:
+    const list = playlistTracks.filter((item) => { return item.track.name.includes(guess) })
+    setFilteredTracks(list);
+    console.log(list);
     setShowDropdoown(true);
+    // console.log("rand", randomSong);
+  };
+  //erase this when okay
+  const [showResultBoxes, setShowResultBoxes] = useState(false); //T/F show result boxes
+  
+  //new
+  const [resultBoxSets, setResultBoxSets] = useState([]);
+  const [selectedOption, setSelectedOption] = useState(""); //holds the selected song from user
+  const [boxColors, setBoxColors] = useState({ //holds color values for the result boxes
+    songName: "#bbb",
+    artist: "#bbb",
+    album: "#bbb",
+    year: "#bbb",
+    genre: "#bbb"
+  });
 
+  const [boxValues, setBoxValues] = useState({ //holds color values for the result boxes
+    songName: "Name",
+    artist: "Artist",
+    album: "Album",
+    year: "Year",
+    genre: "Genre"
+  });
+
+  //handles dropdown selection
+  const handleDropdownChange = (event) => {
+    setSelectedOption(event.target.value);
+  };
+
+  //function to reveal result boxes when an option is submitted
+  const handleSubmitSelection = () => {
+    if(selectedOption) {
+      setShowResultBoxes(true);
+      setResultBoxSets(prevSets => [
+        ...prevSets,
+        {
+          songName: "#bbb",
+          artist: '#bbb',
+          album: '#bbb',
+          year: '#bbb',
+          genre: '#bbb'
+        }
+      ]);
+    }
+  };
+
+  //Function to update the box colors
+  const updateBoxColor = (box, color) => {
+    setBoxColors((prevColors) =>({
+      ...prevColors,
+      [box]: color
+    }));
   };
 
   //html content that is being rendered in index.html
@@ -228,16 +317,59 @@ function App() {
       </div>
       
       {/* <!-- Dropdown for Guess Selection --> */}
-      <select id="guessOptions" style={{display: showDropdown ? "block" : "none"}} >
-      <option value="">Select your guess</option>
-      {/* Dynamically add song options here */}
-      </select>
+      {showDropdown && (
+        <select id="guessOptions" style={{display: showDropdown ? "block" : "none"}} onChange={handleDropdownChange} >
+        <option value="">Select your guess</option>
+        {
+          filteredTracks.map((item, index) => {
+            return <option value={index}>
+              {item.track.name}
+            </option>
+          })
+        }
+        </select>
+      )}
+
+      {/* Submit Selected Option */}
+      {showDropdown && (
+        <button onClick={handleSubmitSelection} style={{backgroundColor: "#666699"}}> Submit </button>
+      )}
 
       {/* <!-- Wordle-style Guess History --> */}
       <div id="guessHistory"></div>
       
       {/* <!-- Give Up Button --> */}
       <button id="giveUp" onClick={handleGiveUp}>Give Up</button>
+
+      {/* Result Boxes */}
+      <div className="result-boxes-container">
+        {resultBoxSets.map((boxColors, index) => (
+          <div key={index} className="result-boxes">
+          <div className="box" style={{ backgroundColor: boxColors.songName }}> Song Name: </div>
+          <div className="box" style={{ backgroundColor: boxColors.artist }}> Artist: </div>
+          <div className="box" style={{ backgroundColor: boxColors.album }}> Album: </div>
+          <div className="box" style={{ backgroundColor: boxColors.year }}> Year: </div>
+          <div className="box" style={{ backgroundColor: boxColors.genre }}> Genre: </div>
+        </div>
+        ))}
+      </div>
+        
+      
+
+      {/* Result Boxes */}
+      <div className="result-boxes-container">
+        {resultBoxSets.map((boxColors, index) => (
+          <div key={index} className="result-boxes">
+          <div className="box" style={{ backgroundColor: boxColors.songName }}> Song Name: </div>
+          <div className="box" style={{ backgroundColor: boxColors.artist }}> Artist: </div>
+          <div className="box" style={{ backgroundColor: boxColors.album }}> Album: </div>
+          <div className="box" style={{ backgroundColor: boxColors.year }}> Year: </div>
+          <div className="box" style={{ backgroundColor: boxColors.genre }}> Genre: </div>
+        </div>
+        ))}
+      </div>
+        
+      
 
     </div>
   );
@@ -249,7 +381,6 @@ function App() {
 
 function setupPlayer(tokenArg) {
     window.onSpotifyWebPlaybackSDKReady = () => {
-      console.log("boobs");
         const token = tokenArg;
         const player = new Spotify.Player({
             name: 'Web Playback SDK Quick Start Player',
