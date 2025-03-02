@@ -243,17 +243,8 @@ function App() {
   }
 
 
-  async function handleGiveUp() {
-    console.log("transfering to: ", deviceID, typeof deviceID);
-    console.log("with token: ", theToken);
-    // transfer playback
-    let data = {device_ids: [deviceID]};
-    await fetch("https://api.spotify.com/v1/me/player", {method: "PUT", headers: {"Authorization": "Bearer " + spotify.getAccessToken()}, body: JSON.stringify(data)});
-    // sleep(3000);
-    // queue song and skip to (working)
-    await fetch("https://api.spotify.com/v1/me/player/queue?uri=spotify%3Atrack%3A4iV5W9uYEdYUVa79Axb7Rh", {method: "POST", headers: {"Authorization": "Bearer " + spotify.getAccessToken()}});
-    await fetch("https://api.spotify.com/v1/me/player/next", {method: "POST", headers: {"Authorization": "Bearer " + spotify.getAccessToken()}});
-
+  function handleGiveUp() {
+    setIsWin(true);
   };
 
   const [guess, setGuess] = useState("");
