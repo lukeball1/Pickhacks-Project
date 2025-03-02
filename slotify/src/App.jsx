@@ -197,7 +197,8 @@ function App() {
     await fetch("https://api.spotify.com/v1/me/player/next", {method: "POST", headers: {"Authorization": "Bearer " + spotify.getAccessToken()}});
 
 
-    await sleep(3000);
+    console.log("boxValues: ", boxValues.length, "; sleeping for:", 3000 * Math.pow(2, boxValues));
+    await sleep(3000 * Math.pow(2, boxValues.length));
     await spotify.pause();
   }
 
