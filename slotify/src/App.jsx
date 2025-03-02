@@ -87,6 +87,7 @@ function App() {
   const [spotifyToken, setSpotifyToken] = useState("");
 
   const [score, setScore] = useState(0);
+  const [attempts, setAttempts] = useState(0);
 
   const spotify = new SpotifyWebApi();
 
@@ -106,6 +107,7 @@ function App() {
 
 
   const handleEndGame = () => {
+    setAttempts(attempts + 1);
     //handle the endgame here -> when user selects start over
     setBoxValues([]);
     window.location.reload();
@@ -127,6 +129,13 @@ function App() {
     //Reset the game state here as needed
    }
 
+  const handleRestart = () => {
+    setPlaylistSubmitted(false);
+    setPlaylistLink("");
+    handlePlayAgain();
+    //Reset the game state here as needed
+  }
+
   // function to make the stars spawn and twinkle
   useEffect(() => {
       const generatedStars = Array.from({ length: 90 }).map((_, i) => ({
@@ -140,7 +149,7 @@ function App() {
   }, []);
 
   //authorization fun
-  useEffect(() => {
+  async function authorizeUser() {
     const result = getTokenFromURL();
     // console.log(result);
     if (result.access_token) {
@@ -181,7 +190,9 @@ function App() {
     } else {
       authorize();
     }
-  })
+  }
+
+  authorizeUser();
 
 
   //making fuction to handle getting the playlist link
@@ -192,15 +203,7 @@ function App() {
     setPlaylistLink(event.target.value);
   };
 
-  //Function to handle playlist submission
-  const handlePlaylistSumbit = () => {
-    switchOutput();
-    console.log("Playlist Submitted:", playlistLink);
-    //add logic to process the playlist
-    //if the playlist is valid and loads properly:
-    if(!(playlistLink == "")){
-      setPlaylistSubmitted(true); //hides input & button
-    }
+  const generateSong = () => {
     const parts = playlistLink.split("/");
     const section = parts[parts.length - 1];
     const id = section.split("?")[0];
@@ -212,6 +215,18 @@ function App() {
       setRandomSong(result.items[rand]);
     });
     setShowDropdoown(true);
+  }
+
+  //Function to handle playlist submission
+  const handlePlaylistSumbit = () => {
+    switchOutput();
+    console.log("Playlist Submitted:", playlistLink);
+    //add logic to process the playlist
+    //if the playlist is valid and loads properly:
+    if(!(playlistLink == "")){
+      setPlaylistSubmitted(true); //hides input & button
+    }
+    generateSong();
   };
 
   async function playCurrentSongStart() {
@@ -321,7 +336,7 @@ function App() {
           songName: filteredTracks[selectedOption].track.name,
           artist: filteredTracks[selectedOption].track.artists[0].name,
           album: filteredTracks[selectedOption].track.album.name,
-          year: filteredTracks[selectedOption].track.album.release_date,
+          year: filteredTracks[selectedOption].track.album.release_date.split("-")[0],
           genre: filteredTracks[selectedOption].track.explicit //is explicit?
         }
       ]);
@@ -402,27 +417,38 @@ function App() {
       <div id="guessHistory"></div>
       
       {/* <!-- Give Up Button --> */}
-      <button id="giveUp" onClick={handleGiveUp}>Give Up</button>
-      {
-        showDropdown && (
-          <button id="listen" onClick={() => playCurrentSongStart()}>Listen</button>
+      { showDropdown && (
+        <button id="giveUp" onClick={handleGiveUp}>Give Up</button> &&
+        <button id="listen" onClick={() => playCurrentSongStart()}>Listen</button>
         )
       }
 
       {/* Result Boxes */}
-      <div className="result-boxes-container">
-        {boxValues.map((value, index) => (
-          <div key={index} className="result-boxes">
-          <div className="box" style={{ backgroundColor: (value.songName == randomSong.track.name)? "#1ED760" : "#bbb" }}> Song Name: {value.songName} </div>
-          <div className="box" style={{ backgroundColor: (value.artist == randomSong.track.artists[0].name)? "#1ED760" : "#bbb" }}> Artist: {value.artist} </div>
-          <div className="box" style={{ backgroundColor: (value.album == randomSong.track.album.name)? "#1ED760" : "#bbb" }}> Album: {value.album} </div>
-          <div className="box" style={{ backgroundColor: (value.year == randomSong.track.album.release_date)? "#1ED760" : "#bbb" }}> Date: {value.year} </div>
-          {/* note here, value.genre really tells if the song is explicit or not */}
-          <div className="box" style={{ backgroundColor: (value.genre == randomSong.track.explicit)? "#1ED760" : "#bbb" }}> Explicit: {(value.genre == true) ? "Yes" : "No"} </div>
-        </div>
-        ))}
-      </div>
-
+      <table>
+        <tbody>
+          <tr>
+            <th className="result_box_header">Song Name</th>
+            <th className="result_box_header">Artist</th>
+            <th className="result_box_header">Album</th>
+            <th className="result_box_header">Year</th>
+            <th className="result_box_header">Explicit</th>
+          </tr>
+          {
+            boxValues.map((value, index) => (
+              <tr>
+                <td className="result_box" style={{ backgroundColor: (value.songName == randomSong.track.name)? "#1ED760" : "#bbb" }}> {value.songName} </td>
+                <td className="result_box" style={{ backgroundColor: (value.artist == randomSong.track.artists[0].name)? "#1ED760" : "#bbb" }}> {value.artist} </td>
+                <td className="result_box" style={{ backgroundColor: (value.album == randomSong.track.album.name)? "#1ED760" : "#bbb" }}> {value.album} </td>
+                <td className="result_box" style={{ backgroundColor: (value.year == randomSong.track.album.release_date.split("-")[0])? "#1ED760" : 
+                  ((Math.abs(value.year - randomSong.track.album.release_date.split("-")[0])) <= 1) ? "#FFCC60" : "#bbb"
+                }}> {value.year} </td>
+                {/* note here, value.genre really tells if the song is explicit or not */}
+                <td className="result_box" style={{ backgroundColor: (value.genre == randomSong.track.explicit)? "#1ED760" : "#bbb" }}> {(value.genre == true) ? "Yes" : "No"} </td>
+              </tr>
+          ))}
+        </tbody>
+      </table>
+        
       {isWin && (
           <div className={`endGame ${(gameOver) ? "display: block" : "display: none"}`}> 
             <h2 className="endGame-title" >Game Over!</h2>
@@ -446,7 +472,7 @@ function App() {
           </div>
         )
       }
-        
+
     </div>
   );
 }
