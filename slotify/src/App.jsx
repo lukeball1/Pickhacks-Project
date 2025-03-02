@@ -451,7 +451,7 @@ function App() {
         
       {isWin && (
           <div className={`endGame ${(gameOver) ? "display: block" : "display: none"}`}> 
-            <h2 className="endGame-title" >Game Over!</h2>
+            <h2 className="endGame-title" >You got it!</h2>
               <p className="endGame-subtitle">The correct song was:</p>
               <p className="endgame-song">{randomSong.track.name} by {randomSong.track.artists[0].name} on the {randomSong.track.album.name} album</p>
               <button className="endGame-button-startOver" 
