@@ -99,6 +99,19 @@ function App() {
 
   const [randomSong, setRandomSong] = useState("");
 
+  //for end game scenario
+  const [gameOver, setGameOver] = useState(false);
+  const [correctSong, setCorrectSong] = useState("Song Title - Artist");
+
+  const handleEndGame = () => {
+    setGameOver(true);
+  };
+
+  const handlePlayAgain = () => {
+    setGameOver(false);
+    //Reset the game state here as needed
+  }
+
   // function to make the stars spawn and twinkle
   useEffect(() => {
       const generatedStars = Array.from({ length: 90 }).map((_, i) => ({
