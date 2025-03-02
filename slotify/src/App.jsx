@@ -238,13 +238,7 @@ function App() {
     genre: "#bbb"
   });
 
-  const [boxValues, setBoxValues] = useState({ //holds color values for the result boxes
-    songName: "Name",
-    artist: "Artist",
-    album: "Album",
-    year: "Year",
-    genre: "Genre"
-  });
+  const [boxValues, setBoxValues] = useState([]);
 
   //handles dropdown selection
   const handleDropdownChange = (event) => {
@@ -263,6 +257,17 @@ function App() {
           album: '#bbb',
           year: '#bbb',
           genre: '#bbb'
+        }
+      ]);
+      const artist = filteredTracks[selectedOption].track.artists.reduce((a, b) => { return a + ", " + b})
+      setBoxValues(prev => [
+        ...prev,
+        {
+          songName: filteredTracks[selectedOption].track.name,
+          artist: "AA",
+          album: filteredTracks[selectedOption].track.album.name,
+          year: filteredTracks[selectedOption].track.album.release_date,
+          genre: filteredTracks[selectedOption].track.name
         }
       ]);
     }
@@ -343,28 +348,13 @@ function App() {
 
       {/* Result Boxes */}
       <div className="result-boxes-container">
-        {resultBoxSets.map((boxColors, index) => (
+        {boxValues.map((value, index) => (
           <div key={index} className="result-boxes">
-          <div className="box" style={{ backgroundColor: boxColors.songName }}> Song Name: </div>
-          <div className="box" style={{ backgroundColor: boxColors.artist }}> Artist: </div>
-          <div className="box" style={{ backgroundColor: boxColors.album }}> Album: </div>
-          <div className="box" style={{ backgroundColor: boxColors.year }}> Year: </div>
-          <div className="box" style={{ backgroundColor: boxColors.genre }}> Genre: </div>
-        </div>
-        ))}
-      </div>
-        
-      
-
-      {/* Result Boxes */}
-      <div className="result-boxes-container">
-        {resultBoxSets.map((boxColors, index) => (
-          <div key={index} className="result-boxes">
-          <div className="box" style={{ backgroundColor: boxColors.songName }}> Song Name: </div>
-          <div className="box" style={{ backgroundColor: boxColors.artist }}> Artist: </div>
-          <div className="box" style={{ backgroundColor: boxColors.album }}> Album: </div>
-          <div className="box" style={{ backgroundColor: boxColors.year }}> Year: </div>
-          <div className="box" style={{ backgroundColor: boxColors.genre }}> Genre: </div>
+          <div className="box" style={{ backgroundColor: {/* function to get color */} }}> {value.songName} </div>
+          <div className="box" style={{ backgroundColor: {/* function to get color */} }}> {value.artist} </div>
+          <div className="box" style={{ backgroundColor: {/* function to get color */} }}> {value.album} </div>
+          <div className="box" style={{ backgroundColor: {/* function to get color */} }}> {value.year} </div>
+          <div className="box" style={{ backgroundColor: {/* function to get color */} }}> {value.genre} </div>
         </div>
         ))}
       </div>
